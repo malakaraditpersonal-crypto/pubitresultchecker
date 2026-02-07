@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIT Notice Tracker | PU Exam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* The Loading Pulse */
+        #status-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: #f3f4f6;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse-animation 1.5s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        #results {
+            text-align: left;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .notice-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .notice-item:hover {
+            transform: translateX(5px);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight {
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            color: #9ca3af;
+            font-style: italic;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="status-box">
+        <div class="pulse" id="pulse-dot"></div>
+        <span id="status-text">Connecting to PU Server...</span>
+    </div>
+    
+    <h1>BIT Exam Notices</h1>
+    <p class="subtitle">Checking Pokhara University Exam Portal</p>
+
+    <div id="results">
+        </div>
+</div>
+
+<script>
+    // Run the function as soon as the page loads
+    window.onload = function() {
+        checkBIT();
+    };
+
+    async function checkBIT() {
+        const statusText = document.getElementById('status-text');
+        const pulseDot = document.getElementById('pulse-dot');
+        const resultsContainer = document.getElementById('results');
+        const targetUrl = 'https://puexam.edu.np/';
+        
+        // CORS Proxy
+        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl);
+
+        try {
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error('Fetch failed');
+            
+            const data = await response.json();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.contents, 'text/html');
+            
+            // Search inside links, list items, and headings
+            const elements = Array.from(doc.querySelectorAll('a, li, h3, h4, p'));
+            const matches = elements.filter(el => 
+                el.innerText.toUpperCase().includes('BIT') && 
+                el.innerText.length < 200 // Exclude huge blocks of text
+            );
+
+            // Clean up duplicates
+            const uniqueNotices = [...new Set(matches.map(m => m.innerText.trim()))];
+
+            if (uniqueNotices.length > 0) {
+                statusText.innerText = `Found ${uniqueNotices.length} Updates`;
+                pulseDot.style.background = "#10b981"; // Green for success
+                pulseDot.style.animation = "none";
+
+                resultsContainer.innerHTML = uniqueNotices.map((text, index) => `
+                    <div class="notice-item" style="animation-delay: ${index * 0.1}s">
+                        ${text.replace(/BIT/gi, '<span class="highlight">BIT</span>')}
+                    </div>
+                `).join('');
+            } else {
+                statusText.innerText = "No BIT notices found";
+                pulseDot.style.background = "#f59e0b"; // Orange for nothing found
+                resultsContainer.innerHTML = '<div class="empty-state">The portal is currently quiet. No BIT mentions found.</div>';
+            }
+
+        } catch (error) {
+            statusText.innerText = "Connection Error";
+            pulseDot.style.background = "#ef4444"; // Red for error
+            resultsContainer.innerHTML = '<div class="empty-state">Could not reach the university server. Please check your internet or try again later.</div>';
+        }
+    }
+</script>
+
+</body>
+</html>
