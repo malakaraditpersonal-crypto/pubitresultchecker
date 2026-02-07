@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>BIT Intelligence | PU Exam Notices</title>
+    <title>BIT Notice Portal | PU Exam</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
     <style>
         :root {
@@ -18,13 +18,10 @@
             --tag-default: #64748b;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
             color: var(--text);
             margin: 0;
             min-height: 100vh;
@@ -32,119 +29,78 @@
             display: grid;
             place-items: center;
         }
-
-        .dashboard {
-            width: 100%;
-            max-width: 680px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
+        .dashboard { width: 100%; max-width: 700px; }
+        header { text-align: center; margin-bottom: 48px; }
         h1 {
-            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            font-size: clamp(1.9rem, 5.5vw, 2.5rem);
             font-weight: 700;
             background: linear-gradient(90deg, #818cf8, #c084fc);
             -webkit-background-clip: text;
-            background-clip: text;
+            background-clip: text;                    /* Standard property for compatibility */
             -webkit-text-fill-color: transparent;
-            margin: 0 0 0.6em;
+            margin: 0 0 0.5em;
         }
-
         .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 10px;
             background: rgba(255,255,255,0.06);
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: 999px;
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.09);
         }
-
         .pulse {
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             border-radius: 50%;
             background: var(--primary);
-            box-shadow: 0 0 12px var(--primary);
-            animation: pulse-ring 1.6s infinite ease-in-out;
+            box-shadow: 0 0 14px var(--primary);
+            animation: pulse 1.8s infinite ease-in-out;
         }
+        @keyframes pulse { 0%,100% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.35); opacity: 1; } }
 
-        @keyframes pulse-ring {
-            0%, 100% { transform: scale(0.85); opacity: 0.5; }
-            50%      { transform: scale(1.3);  opacity: 1;   }
-        }
-
-        #notice-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
+        #notice-list { display: flex; flex-direction: column; gap: 18px; }
         .notice-card {
             background: var(--card);
             border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: all 0.25s ease;
-            animation: slideUp 0.7s cubic-bezier(0.23,1,0.32,1) forwards;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.07);
+            transition: all 0.28s ease;
+            animation: slideUp 0.65s cubic-bezier(0.23,1,0.32,1) forwards;
             opacity: 0;
         }
-
         .notice-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(79,70,229,0.3);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            border-color: rgba(79,70,229,0.35);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.25);
         }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0);    }
-        }
+        @keyframes slideUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
 
         .category-badge {
-            font-size: 0.68rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            padding: 4px 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            display: inline-block;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+            padding: 5px 11px; border-radius: 6px; margin-bottom: 14px; display: inline-block;
         }
+        .title { font-size: 1.08rem; line-height: 1.5; color: #e2e8f0; }
+        .highlight { color: #a5b4fc; font-weight: 600; }
 
-        .title {
-            font-size: 1.05rem;
-            line-height: 1.48;
-            color: #e2e8f0;
-        }
-
-        .highlight {
-            color: #a5b4fc;
-            font-weight: 600;
-        }
-
-        /* Category styles */
-        .cat-form   { background: rgba(236,72,153,0.14); color: #f472b6; border: 1px solid rgba(236,72,153,0.28); }
-        .cat-result { background: rgba(16,185,129,0.14); color: #34d399; border: 1px solid rgba(16,185,129,0.28); }
-        .cat-center { background: rgba(245,158,11,0.14);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.28); }
-        .cat-reg    { background: rgba(59,130,246,0.14);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.28); }
-        .cat-other  { background: rgba(100,116,139,0.14); color: #94a3b8; border: 1px solid rgba(100,116,139,0.28); }
+        .cat-form   { background: rgba(236,72,153,0.15); color:#f472b6; border:1px solid rgba(236,72,153,0.3); }
+        .cat-result { background: rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+        .cat-center { background: rgba(245,158,11,0.15);  color:#fbbf24; border:1px solid rgba(245,158,11,0.3); }
+        .cat-reg    { background: rgba(59,130,246,0.15);  color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+        .cat-other  { background: rgba(100,116,139,0.15); color:#94a3b8; border:1px solid rgba(100,116,139,0.3); }
 
         .loader, .error {
             text-align: center;
-            padding: 60px 20px;
+            padding: 70px 20px;
             color: #64748b;
-            font-size: 0.95rem;
+            font-size: 0.98rem;
+            line-height: 1.5;
         }
 
-        @media (max-width: 480px) {
-            .dashboard { padding: 0 8px; }
-            h1 { font-size: 1.9rem; }
+        @media (max-width: 500px) {
+            .dashboard { padding: 0 10px; }
+            h1 { font-size: 2rem; }
         }
     </style>
 </head>
@@ -155,12 +111,12 @@
         <h1>BIT Notice Portal</h1>
         <div class="status-pill">
             <div class="pulse"></div>
-            <span id="status-text">Connecting to Purbanchal University...</span>
+            <span id="status-text">Scanning Purbanchal University exams...</span>
         </div>
     </header>
 
     <div id="notice-list">
-        <div class="loader">Scanning for BIT notices...</div>
+        <div class="loader">Fetching latest BIT-related notices...</div>
     </div>
 </div>
 
@@ -171,74 +127,91 @@
     window.addEventListener('load', fetchNotices);
 
     async function fetchNotices() {
-        const target = 'https://puexam.edu.np/';
-        const proxy  = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target);
+        const timestamp = Date.now();
+        const targetUrl = `https://puexam.edu.np/?ts=${timestamp}`;
+        const proxyUrl  = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
 
-        STATUS.textContent = 'Scanning Purbanchal University...';
+        STATUS.textContent = 'Scanning...';
 
         try {
-            const res = await fetch(proxy);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const response = await fetch(proxyUrl, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-            const html = await res.text();
+            const html = await response.text();
             const doc  = new DOMParser().parseFromString(html, 'text/html');
 
-            // More targeted selectors for notice-like content
-            const candidates = doc.querySelectorAll(
-                'a[href*="notice"], a[href*="exam"], a[href*="result"], ' +
-                'a[href*="form"], .notice a, .announcement a, ' +
-                'li a, p strong a, .list-item a, td a'
+            // Target broad areas where notices appear: links + list-like text blocks
+            const elements = doc.querySelectorAll(
+                'a, li, ol li, ul li, p, div, span, ' +
+                '[class*="notice"], [class*="event"], [class*="update"], ' +
+                'h1 ~ *, h2 ~ *, h3 ~ *'   // sibling content after headings
             );
 
-            const texts = Array.from(candidates)
-                .map(a => a.innerText.trim())
-                .filter(t => t && t.length > 12)
-                .filter(t => t.toUpperCase().includes('BIT'))
-                .filter(t => !t.toUpperCase().includes('COPYRIGHT') &&
-                              !t.includes('Biratnagar') &&
-                              !t.includes('Office of the') &&
-                              !t.toUpperCase().includes('WELCOME'));
+            const noticeTexts = new Set();
 
-            // Remove near-duplicates (simple normalization)
-            const unique = [...new Set(texts.map(t => t.replace(/\s+/g, ' ').trim()))];
+            elements.forEach(el => {
+                let text = (el.innerText || el.textContent || '').trim();
+                if (!text || text.length < 20 || text.length > 550) return;
+
+                const upper = text.toUpperCase();
+
+                if (upper.includes('BIT') &&
+                    !upper.includes('COPYRIGHT') &&
+                    !upper.includes('ALL RIGHTS') &&
+                    !upper.includes('BIRATNAGAR') &&
+                    !upper.includes('OFFICE OF THE') &&
+                    !upper.includes('WELCOME') &&
+                    !upper.includes('EDUCATION FOR ALL') &&
+                    !upper.includes('CONTACT') &&
+                    !upper.match(/^\d{4}-\d{2}-\d{2}$/)) {   // skip pure dates
+
+                    // Normalize whitespace
+                    text = text.replace(/\s+/g, ' ').trim();
+                    noticeTexts.add(text);
+                }
+            });
+
+            const notices = Array.from(noticeTexts);
 
             LIST.innerHTML = '';
 
-            if (unique.length === 0) {
-                STATUS.textContent = 'Scan complete — no BIT notices found';
-                LIST.innerHTML = '<div class="loader">No recent BIT-related notices detected.<br>Check back later!</div>';
+            if (notices.length === 0) {
+                STATUS.textContent = 'No BIT notices detected';
+                LIST.innerHTML = '<div class="loader">No current BIT-related notices found.<br>Try refreshing or check later!</div>';
                 return;
             }
 
-            STATUS.textContent = `Found ${unique.length} BIT notice${unique.length === 1 ? '' : 's'}`;
+            STATUS.textContent = `Found ${notices.length} BIT-related item${notices.length === 1 ? '' : 's'}`;
 
-            unique.forEach((text, i) => {
+            notices.forEach((text, index) => {
                 const card = document.createElement('div');
                 card.className = 'notice-card';
-                card.style.animationDelay = `${i * 0.08}s`;
+                card.style.animationDelay = `${index * 0.09}s`;
 
-                const cat = categorize(text);
+                const category = categorize(text);
                 card.innerHTML = `
-                    <div class="category-badge ${cat.class}">${cat.label}</div>
+                    <div class="category-badge ${category.class}">${category.label}</div>
                     <div class="title">${highlightBIT(text)}</div>
                 `;
 
                 LIST.appendChild(card);
             });
 
-        } catch (err) {
-            console.error(err);
-            STATUS.textContent = 'Connection failed';
-            LIST.innerHTML = `<div class="error">Could not load notices from university site.<br>Error: ${err.message}</div>`;
+        } catch (error) {
+            console.error('Fetch/parse error:', error);
+            STATUS.textContent = 'Failed to load';
+            LIST.innerHTML = `<div class="error">Unable to fetch notices from puexam.edu.np<br>${error.message || 'Network/proxy issue'}</div>`;
         }
     }
 
     function categorize(text) {
         const u = text.toUpperCase();
-        if (u.includes('RESULT'))     return { label: 'Result',      class: 'cat-result' };
-        if (u.includes('FORM') || u.includes('FILL')) return { label: 'Exam Form',   class: 'cat-form'   };
-        if (u.includes('CENTER') || u.includes('CENTRE')) return { label: 'Exam Center', class: 'cat-center' };
-        if (u.includes('REGISTRATION') || u.includes('REG')) return { label: 'Registration',class: 'cat-reg'    };
+        if (u.includes('RESULT') || u.includes('RESULTS')) return { label: 'Result', class: 'cat-result' };
+        if (u.includes('FORM') || u.includes('FILL')) return { label: 'Exam Form', class: 'cat-form' };
+        if (u.includes('CENTER') || u.includes('CENTRE') || u.includes('ROUTINE') || u.includes('SCHEDULE')) {
+            return { label: 'Exam Center / Routine', class: 'cat-center' };
+        }
+        if (u.includes('REGISTRATION') || u.includes('REG')) return { label: 'Registration', class: 'cat-reg' };
         return { label: 'Notice', class: 'cat-other' };
     }
 
